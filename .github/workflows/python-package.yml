@@ -2,9 +2,6 @@ name: Build and Test
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
 
 jobs:
   build:
@@ -12,7 +9,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.10", "3.12"]
+        python-version: ["3.12"]
 
     steps:
       - uses: actions/checkout@v3
@@ -31,7 +28,10 @@ jobs:
           poetry update
           poetry install
       - name: Test with pytest
-        run: |
-          poetry run pytest -s -x
+        uses: koenhagen/measure-energy-action@v0.33
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: poetry run pytest -s -x
+          count: 1
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
